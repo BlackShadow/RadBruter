@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <CompilerDir>$(GeneratedDir)$(CompilerFamily)\</CompilerDir>
+    <CompilerEngine>hlrad</CompilerEngine>
+    <CompilerEngine Condition="'$(CompilerFamily)' == 'sdhlt'">sdHLRAD</CompilerEngine>
+    <CompilerDefine>HLRAD</CompilerDefine>
+    <CompilerDefine Condition="'$(CompilerFamily)' == 'sdhlt'">SDHLRAD</CompilerDefine>
+    <CompilerUpper>$(CompilerFamily.ToUpperInvariant())</CompilerUpper>
+    <TargetName>radbruter-$(CompilerFamily)</TargetName>
+    <OutDir>$(BuildRoot)$(Configuration)\compilers\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(CompilerDir)common;$(CompilerDir)template;$(CompilerDir)$(CompilerEngine);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>LM_NATIVE_WORKER;LM_$(CompilerUpper);$(CompilerDefine);NDEBUG;STDC_HEADERS;SIZEOF_CHARP=8;SYSTEM_WIN32;VERSION_64BIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>climits;cstdint;intrin.h;$(CompilerDir)build_identity.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <!-- Upstream engines intentionally narrow BSP indices and lighting values. -->
+      <DisableSpecificWarnings>4005;4018;4101;4244;4267;4305;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(RepoRoot)src\compiler.cpp" />
+    <ClCompile Include="$(CompilerDir)common\blockmem.cpp;$(CompilerDir)common\bspfile.cpp;$(CompilerDir)common\cmdlib.cpp;$(CompilerDir)common\filelib.cpp;$(CompilerDir)common\log.cpp;$(CompilerDir)common\mathlib.cpp;$(CompilerDir)common\messages.cpp;$(CompilerDir)common\scriplib.cpp;$(CompilerDir)common\threads.cpp;$(CompilerDir)common\winding.cpp" />
+    <ClCompile Include="$(CompilerDir)$(CompilerEngine)\lerp.cpp;$(CompilerDir)$(CompilerEngine)\lightmap.cpp;$(CompilerDir)$(CompilerEngine)\mathutil.cpp;$(CompilerDir)$(CompilerEngine)\nomatrix.cpp;$(CompilerDir)$(CompilerEngine)\qrad.cpp;$(CompilerDir)$(CompilerEngine)\qradutil.cpp;$(CompilerDir)$(CompilerEngine)\sparse.cpp;$(CompilerDir)$(CompilerEngine)\trace.cpp;$(CompilerDir)$(CompilerEngine)\transfers.cpp;$(CompilerDir)$(CompilerEngine)\transparency.cpp;$(CompilerDir)$(CompilerEngine)\vismatrix.cpp;$(CompilerDir)$(CompilerEngine)\vismatrixutil.cpp" />
+    <ClInclude Include="$(RepoRoot)src\compiler.h;$(RepoRoot)src\runtime.h;$(RepoRoot)src\platform.h;$(RepoRoot)src\hash.h;$(CompilerDir)**\*.h" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(CompilerFamily)' == 'zhlt'">
+    <ClCompile Include="$(CompilerDir)common\resourcelock.cpp" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(CompilerFamily)' != 'zhlt'">
+    <ClCompile Include="$(CompilerDir)common\cmdlinecfg.cpp;$(CompilerDir)$(CompilerEngine)\compress.cpp;$(CompilerDir)$(CompilerEngine)\loadtextures.cpp" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(CompilerFamily)' == 'sdhlt'">
+    <ClCompile Include="$(CompilerDir)$(CompilerEngine)\meshdesc.cpp;$(CompilerDir)$(CompilerEngine)\meshtrace.cpp;$(CompilerDir)$(CompilerEngine)\progmesh.cpp;$(CompilerDir)$(CompilerEngine)\stringlib.cpp;$(CompilerDir)$(CompilerEngine)\studio.cpp" />
+  </ItemGroup>
+</Project>

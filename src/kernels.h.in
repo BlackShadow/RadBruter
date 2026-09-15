@@ -1,0 +1,2 @@
+#pragma once
+inline constexpr const char *lm_cuda_source = R"LMCUDA(@LM_CUDA_SOURCE@)LMCUDA";

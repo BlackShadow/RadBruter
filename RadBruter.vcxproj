@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64"><Configuration>Debug</Configuration><Platform>x64</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64"><Configuration>Release</Configuration><Platform>x64</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{9FC69108-265F-46FC-B362-37BD6046EA82}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>RadBruter</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(DefaultPlatformToolset)' != ''">$(DefaultPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v143</PlatformToolset>
+    <UseDebugLibraries Condition="'$(Configuration)' == 'Debug'">true</UseDebugLibraries>
+    <UseDebugLibraries Condition="'$(Configuration)' != 'Debug'">false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="msbuild\Common.props" />
+  <PropertyGroup><TargetName>radbruter</TargetName></PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(RepoRoot)src\qrad\common;$(RepoRoot)src\qrad\engine;$(GeneratedDir);$(DepsDir)eigen;$(DepsDir)lbfgspp\include;$(DepsDir)cuda\Windows\runtime\include;$(DepsDir)cuda\Windows\nvrtc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>EIGEN_DONT_PARALLELIZE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp;src\runtime.cpp" />
+    <ClCompile Include="src\qrad\engine\qrad.c;src\qrad\engine\lightmap.c;src\qrad\engine\trace.c;src\qrad\engine\vismat.c;src\qrad\common\bspfile.c;src\qrad\common\cmdlib.c;src\qrad\common\mathlib.c;src\qrad\common\polylib.c;src\qrad\common\scriplib.c;src\qrad\common\threads.c">
+      <CompileAs>CompileAsC</CompileAs>
+      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <PreprocessorDefinitions>LM_SERIAL_QRAD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ForcedIncludeFiles>$(RepoRoot)src\qrad\compat.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <DisableSpecificWarnings>4005;4018;4101;4244;4267;4305;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClInclude Include="src\**\*.h;$(GeneratedDir)kernels.h" />
+    <None Include="src\kernels.cu;src\kernels.h.in;msbuild\*.ps1;README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="msbuild\Platform.vcxproj">
+      <Project>{2026331C-1F7A-504C-B0E4-4858448F0236}</Project>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="msbuild\ZHLT.vcxproj">
+      <Project>{9B6E80BB-295E-5677-832F-6832313ABFD7}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="msbuild\VHLT.vcxproj">
+      <Project>{4A702E50-35B3-5B0F-9C2E-72209D0936C2}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="msbuild\SDHLT.vcxproj">
+      <Project>{1B1E02E9-9736-5C4A-9AF1-CF912C24AD73}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="msbuild\Prepare.targets" />
+  <ItemGroup>
+    <GpuRuntime Include="$(DepsDir)cuda\Windows\nvrtc\bin\nvrtc64_120_0.dll;$(DepsDir)cuda\Windows\nvrtc\bin\nvrtc-builtins64_129.dll" />
+  </ItemGroup>
+  <Target Name="CopyGpuRuntime" AfterTargets="Build">
+    <Copy SourceFiles="@(GpuRuntime)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="CleanGpuRuntime" BeforeTargets="Clean">
+    <Delete Files="@(GpuRuntime->'$(OutDir)%(Filename)%(Extension)')" />
+  </Target>
+  <Target Name="Check" DependsOnTargets="Build">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(RepoRoot)msbuild\Test.ps1&quot; -Configuration $(Configuration)" />
+  </Target>
+</Project>

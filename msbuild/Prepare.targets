@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <PreparationInput Include="$(MSBuildThisFileDirectory)Prepare.ps1;$(RepoRoot)src\gpu_types.h;$(RepoRoot)src\kernels.cu;$(RepoRoot)src\kernels.h.in;$(DepsDir)compiler-sources\**\*.cpp;$(DepsDir)compiler-sources\**\*.h" />
+    <PreparationMarker Include="$(DepsDir)eigen\Eigen\Core;$(DepsDir)lbfgspp\include\LBFGSB.h;$(DepsDir)cuda\Windows\runtime\include\cuda.h;$(DepsDir)cuda\Windows\nvrtc\include\nvrtc.h;$(DepsDir)cuda\Windows\nvrtc\bin\nvrtc64_120_0.dll;$(DepsDir)cuda\Windows\nvrtc\bin\nvrtc-builtins64_129.dll;$(GeneratedDir)kernels.h;$(GeneratedDir)zhlt\hlrad\qrad.cpp;$(GeneratedDir)vhlt\hlrad\qrad.cpp;$(GeneratedDir)sdhlt\sdHLRAD\qrad.cpp" />
+  </ItemGroup>
+  <Target Name="CheckPreparationFiles">
+    <ItemGroup>
+      <MissingPreparationMarker Include="@(PreparationMarker)" Condition="!Exists('%(Identity)')" />
+    </ItemGroup>
+    <Delete Files="$(GeneratedDir)ready.stamp" Condition="'@(MissingPreparationMarker)' != ''" />
+  </Target>
+  <Target Name="PrepareRadBruter" BeforeTargets="PrepareForBuild" DependsOnTargets="CheckPreparationFiles"
+          Inputs="@(PreparationInput)" Outputs="$(GeneratedDir)ready.stamp">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Prepare.ps1&quot;" />
+  </Target>
+</Project>

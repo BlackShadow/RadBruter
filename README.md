@@ -2,9 +2,10 @@
 
 # RadBruter
 
-Recover RAD texture-light values from compiled **GoldSrc BSP30** maps on Windows and Linux.
-RadBruter selects a compatible lighting compiler, detects CUDA or CPU processing, and chooses
-the thread count automatically. CUDA acceleration is available for QRAD; other compilers use the CPU.
+RadBruter allows you to recover lightmap values from compiled **GoldSrc** maps.
+RadBruter automatically detects maps original RAD compiler and bruteforces based on that. 
+Additionally, detects for CUDA compatiable card. If CUDA is not an option for you, it can use CPU.
+CUDA acceleration currently available for QRAD; other compilers use the CPU.
 
 ## Download
 
@@ -15,14 +16,13 @@ Extract the whole archive and keep the executable, DLLs and `compilers` folder t
 
 ```bat
 radbruter.exe map.bsp
-radbruter.exe map -qrad --quality full -v
 ```
 
 On Linux, use `./radbruter`. The `.bsp` extension is optional.
 
 After loading a map, choose **Fast**, **Balanced** (default), or **Full** recovery.
 Live progress shows the map, compiler, completed work and an estimated remaining time.
-The result is saved to `output/<map>.rad` with whole-number values. The input BSP is unchanged.
+The result is saved to `output/<map>.rad` with bruted values.
 
 | Option | Purpose |
 | --- | --- |

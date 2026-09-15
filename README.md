@@ -61,6 +61,3 @@ cmake --build --preset release
 
 Output: `build/Release/radbruter.exe` on Windows or `build/Release/radbruter` on Linux.
 Use Release for normal recovery; Debug is much slower.
-
-Compiler selection and recovered values are estimates, not proof of the original compiler or RAD file.
-See [compiler details](src/COMPILERS.md).
